@@ -43,19 +43,21 @@
         <img id="modal-img" src="" alt="Büyütülmüş görüntü" class="max-w-full max-h-full object-contain rounded shadow-2xl transition-transform duration-300 cursor-default" onclick="event.stopPropagation()">
     </div>
 
+    <!-- Toast Notification (Feedback de Cópia) -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-[60]">
+        Bağlantı kopyalandı!
+    </div>
+
     <script>
-        // ADICIONAR NOVAS IMAGENS AQUI:
-        // Basta adicionar mais itens seguindo o padrão { id, url, title }
+        // Imagens (K6 removido conforme solicitado)
         const images = [
             { id: 'K1', url: 'K1.png', title: 'Asset K1' },
             { id: 'K2', url: 'K2.png', title: 'Asset K2' },
             { id: 'K3', url: 'K3.png', title: 'Asset K3' },
             { id: 'K4', url: 'K4.png', title: 'Asset K4' },
-            { id: 'K5', url: 'K5.png', title: 'Asset K5' },
-            { id: 'K6', url: 'K6.png', title: 'Asset K6' }
+            { id: 'K5', url: 'K5.png', title: 'Asset K5' }
         ];
 
-        // Abrir Modal
         function openModal(url) {
             const modal = document.getElementById('modal');
             const modalImg = document.getElementById('modal-img');
@@ -64,14 +66,12 @@
             document.body.classList.add('modal-open');
         }
 
-        // Fechar Modal
         function closeModal() {
             const modal = document.getElementById('modal');
             modal.style.display = 'none';
             document.body.classList.remove('modal-open');
         }
 
-        // Lógica de Download
         function downloadImage(url, filename) {
             const link = document.createElement('a');
             link.href = url;
@@ -81,7 +81,29 @@
             document.body.removeChild(link);
         }
 
-        // Renderizar Galeria dinamicamente
+        function copyToClipboard(text) {
+            // Fallback para cópia em ambientes restritos
+            const textArea = document.createElement("textarea");
+            textArea.value = window.location.origin + window.location.pathname.replace(/[^\/]*$/, "") + text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Kopyalama hatası:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2000);
+        }
+
         function renderGallery() {
             const container = document.getElementById('gallery');
             container.innerHTML = images.map(img => `
@@ -110,15 +132,30 @@
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 leading-tight truncate">${img.title}</h3>
                             
-                            <button 
-                                onclick="downloadImage('${img.url}', '${img.url}')"
-                                class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-gray-200 active:scale-95"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                <span>İndir</span>
-                            </button>
+                            <div class="flex gap-2">
+                                <!-- Botão de Download -->
+                                <button 
+                                    onclick="downloadImage('${img.url}', '${img.url}')"
+                                    class="flex-1 bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-200 active:scale-95"
+                                    title="İndir"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span>İndir</span>
+                                </button>
+
+                                <!-- Botão de Copiar Link -->
+                                <button 
+                                    onclick="copyToClipboard('${img.url}')"
+                                    class="bg-white border-2 border-gray-200 hover:border-gray-900 text-gray-900 font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center active:scale-95"
+                                    title="Bağlantıyı Kopyala"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
