@@ -123,15 +123,7 @@
           <p id="last-update-time" class="text-sm font-mono text-slate-300">--:--:--</p>
         </div>
 
-        <button id="sync-btn"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/20">
-          <svg id="sync-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-            <path d="M21 3v5h-5" />
-          </svg>
-          <span id="sync-btn-text">Sync Now</span>
-        </button>
+        
       </div>
     </header>
 
@@ -176,11 +168,19 @@
         </div>
         <div class="flex bg-slate-800/50 p-1.5 rounded-2xl border border-slate-700 h-full" id="filter-tabs">
           <button data-filter="all"
-            class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all text-slate-500 hover:text-white filter-btn">All</button>
-          <button data-filter="enemy"
-            class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all bg-red-500/20 text-red-400 shadow-inner filter-btn">Enemies</button>
-          <button data-filter="ally"
-            class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all text-slate-500 hover:text-blue-400 filter-btn">Allies</button>
+class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all bg-slate-700 text-white shadow-inner filter-btn">
+  All
+</button>
+
+<button data-filter="enemy"
+class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all text-slate-500 hover:text-red-400 filter-btn">
+  Enemies
+</button>
+
+<button data-filter="ally"
+class="flex-1 rounded-xl text-[10px] font-black uppercase transition-all text-slate-500 hover:text-blue-400 filter-btn">
+  Allies
+</button>
         </div>
       </div>
 
@@ -203,8 +203,8 @@
     </div>
 
     <!-- Data List -->
-    <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      <!-- Cards renderizados aqui -->
+<div id="results-container" class="grid gap-2"
+     style="grid-template-columns: repeat(auto-fill,minmax(120px,1fr));">      <!-- Cards renderizados aqui -->
     </div>
 
     <!-- Notification Toast -->
@@ -222,251 +222,132 @@
   </div>
 
   <script>
-    const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTNDU9rDhu7oFYp9NB0q8B6QEiqcmYqsYDa5OQOp8-Pjh6DKY-gzBrxDmFC-EFMmPLCJ3HYsminWUt/pub';
-    const FRIENDS_TSV = `${SHEET_BASE}?gid=0&single=true&output=tsv`;
-    const ENEMIES_TSV = `${SHEET_BASE}?gid=1987397581&single=true&output=tsv`;
+const guilds = [
+  // ALLIES
+  { tag: "»K«", type: "ally" },
+  { tag: "«K»", type: "ally" },
+  { tag: "ꞦØM", type: "ally" },
+  { tag: "ꞦNҒ", type: "ally" },
+  { tag: "No1", type: "ally" },
+  { tag: "Nᴏ1", type: "ally" },
+  { tag: "ƬᴇK", type: "ally" },
+  { tag: "ℛ~ℳ", type: "ally" },
+  { tag: "LT", type: "ally" },
+  { tag: "BYZ", type: "ally" },
+  { tag: "ANG", type: "ally" },
+  { tag: "EZF", type: "ally" },
+  { tag: "PKS", type: "ally" },
+  { tag: "W.G", type: "ally" },
 
-    let players = [];
-    let filterType = 'enemy';
-    let selectedGuild = 'all';
-    let searchTerm = '';
+  // NAP
+  { tag: "*V*", type: "nap" },
+  { tag: "Y~K", type: "nap" },
 
-    const resultsContainer = document.getElementById('results-container');
-    const searchInput = document.getElementById('search-input');
-    const guildSelector = document.getElementById('guild-selector');
-    const syncBtn = document.getElementById('sync-btn');
-    const syncIcon = document.getElementById('sync-icon');
-    const syncBtnText = document.getElementById('sync-btn-text');
-    const lastUpdateTime = document.getElementById('last-update-time');
-    const toast = document.getElementById('toast');
+  // ENEMIES
+  { tag: "Ɓ†G", type: "enemy" },
+  { tag: "MBŤ", type: "enemy" },
+  { tag: "24Ħ", type: "enemy" },
+  { tag: "ΛGΛ", type: "enemy" },
+  { tag: "°Ʊ°", type: "enemy" },
+  { tag: "CNΛ", type: "enemy" },
+  { tag: "S»R", type: "enemy" },
+  { tag: "GΣЯ", type: "enemy" },
+  { tag: "КłZ", type: "enemy" },
+  { tag: "Dʀќ", type: "enemy" },
+  { tag: "CİИ", type: "enemy" },
+  { tag: "R]T", type: "enemy" },
+  { tag: "1st", type: "enemy" },
+  { tag: "ฬคг", type: "enemy" },
+  { tag: "BGP", type: "enemy" },
+  { tag: "RO", type: "enemy" },
+  { tag: "HEL", type: "enemy" },
+  { tag: "MVP", type: "enemy" },
+  { tag: "D€L", type: "enemy" },
+  { tag: "N¤S", type: "enemy" },
+  { tag: "SAU", type: "enemy" },
+  { tag: "HUN", type: "enemy" },
+  { tag: "PΞH", type: "enemy" },
+  { tag: "AԼƁ", type: "enemy" },
+  { tag: "ŠAŤ", type: "enemy" },
+  { tag: "ӨPӨ", type: "enemy" },
+  { tag: "SĦ«", type: "enemy" },
+  { tag: "BOR", type: "enemy" },
+  { tag: "ĐSA", type: "enemy" },
+  { tag: "Ǿxƒ", type: "enemy" },
+  { tag: "MKᴀ", type: "enemy" },
+  { tag: "3ØØ", type: "enemy" },
+  { tag: "KKK", type: "enemy" },
+  { tag: "ℋ.ℛ", type: "enemy" },
+  { tag: "S҉C", type: "enemy" },
+  { tag: "Čǒv", type: "enemy" },
+  { tag: "ΙMṖ", type: "enemy" },
+  { tag: "ĐIΣ", type: "enemy" },
+  { tag: "Ko!", type: "enemy" },
+  { tag: "Ro!", type: "enemy" },
+  { tag: "CZE", type: "enemy" },
+  { tag: "нu!", type: "enemy" },
+  { tag: "Hu!", type: "enemy" },
+  { tag: "F♣Я", type: "enemy" },
+  { tag: "ฬ_ฬ", type: "enemy" },
+  { tag: "ƊΣS", type: "enemy" },
+  { tag: "ЯΣD", type: "enemy" },
+  { tag: "-†-", type: "enemy" }
+];
 
-    function loadCache() {
-      const cachedData = localStorage.getItem('sf_intel_v3_cache');
-      const cachedTime = localStorage.getItem('sf_intel_v3_time');
-      if (cachedData) {
-        try {
-          players = JSON.parse(cachedData);
-          if (cachedTime) lastUpdateTime.innerText = cachedTime;
-          updateGuildList();
-          updateStats();
-          render();
-        } catch (e) {
-          localStorage.removeItem('sf_intel_v3_cache');
-        }
-      }
-    }
+let filterType = "all";
+let searchTerm = "";
 
-    function showToast(msg) {
-      toast.innerText = msg;
-      toast.classList.remove('opacity-0', 'translate-y-10');
-      setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2500);
-    }
+function render() {
+  const resultsContainer = document.getElementById("results-container");
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).catch(() => {
-        const tmp = document.createElement('input');
-        tmp.value = text;
-        document.body.appendChild(tmp);
-        tmp.select();
-        document.execCommand('copy');
-        document.body.removeChild(tmp);
-      });
-      showToast('Copied!');
-    }
+  const filtered = guilds.filter(g => {
+    const matchFilter = filterType === "all" || g.type === filterType;
+    const matchSearch = g.tag.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchFilter && matchSearch;
+  });
 
-    function parseCell(cellValue) {
-      if (!cellValue || cellValue.trim() === '') return null;
-      const cell = cellValue.trim();
-      const idMatch = cell.match(/[（(]?(\d+\/\d+)[）)]?/);
-      if (idMatch) {
-        const id = idMatch[1];
-        let name = cell.replace(/\s*[（(]?\d+\/\d+[）)]?\s*/, '').trim();
-        if (!name) name = 'Unknown Player';
-        return { name, id };
-      }
-      return { name: cell, id: '0/0' };
-    }
+  document.getElementById("count-allies").innerText =
+    guilds.filter(x => x.type === "ally").length;
 
-    async function processTsv(url, type) {
-      try {
-        const response = await fetch(url, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const text = await response.text();
-        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) throw new Error('Got HTML instead of TSV');
-        if (!text || text.trim() === '') return [];
+  document.getElementById("count-enemies").innerText =
+    guilds.filter(x => x.type === "enemy").length;
 
-        const rows = text.split('\n').map(r => r.split('\t').map(c => c.trim()));
-        const nonEmpty = rows.filter(r => r.some(c => c !== ''));
-        if (nonEmpty.length < 2) return [];
+  resultsContainer.innerHTML = filtered.map(g => {
+    const colors =
+      g.type === "enemy"
+        ? "border-red-500 text-red-400 bg-red-500/10"
+        : g.type === "ally"
+        ? "border-blue-500 text-blue-400 bg-blue-500/10"
+        : "border-yellow-500 text-yellow-400 bg-yellow-500/10";
 
-        const headerRow = nonEmpty[0];
-        const dataRows = nonEmpty.slice(1);
-        const extracted = [];
+    return `
+      <div class="glass-panel rounded-xl border-t-2 ${colors}">
+        <div class="p-5 text-center">
+          <div class="text-2xl font-black text-white">${g.tag}</div>
+          <div class="text-xs uppercase font-bold mt-2 ${g.type === "enemy" ? "text-red-400" :
+            g.type === "ally" ? "text-blue-400" : "text-yellow-400"}">
+            ${g.type}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
 
-        for (let col = 0; col < headerRow.length; col++) {
-          const guildName = headerRow[col];
-          if (!guildName || guildName === '') continue;
-          for (const row of dataRows) {
-            if (!row[col] || row[col] === '') continue;
-            const parsed = parseCell(row[col]);
-            if (!parsed) continue;
-            extracted.push({ name: parsed.name, id: parsed.id, guild: guildName, type });
-          }
-        }
-        return extracted;
-      } catch (e) {
-        console.error(`[Error] ${type}:`, e.message);
-        return null;
-      }
-    }
+document.getElementById("search-input").addEventListener("input", e => {
+  searchTerm = e.target.value;
+  render();
+});
 
-    async function fetchData() {
-      syncIcon.classList.add('animate-spin');
-      syncBtn.disabled = true;
-      syncBtnText.innerText = 'Syncing...';
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterType = btn.dataset.filter;
+    render();
+  });
+});
 
-      try {
-        const [friendsResult, enemiesResult] = await Promise.all([
-          processTsv(FRIENDS_TSV, 'ally'),
-          processTsv(ENEMIES_TSV, 'enemy')
-        ]);
-
-        if (friendsResult === null && enemiesResult === null) throw new Error('Connection failed for both sheets.');
-
-        players = [...(friendsResult || []), ...(enemiesResult || [])];
-
-        const timeString = new Date().toLocaleTimeString();
-        lastUpdateTime.innerText = timeString;
-        localStorage.setItem('sf_intel_v3_cache', JSON.stringify(players));
-        localStorage.setItem('sf_intel_v3_time', timeString);
-
-        updateGuildList();
-        updateStats();
-        render();
-
-        if (friendsResult === null || enemiesResult === null) showToast('⚠️ Partial sync.');
-        else if (players.length === 0) showToast('Sheet empty or format not recognized.');
-
-      } catch (err) {
-        console.error('Sync error:', err);
-        showToast('Sync error!');
-      } finally {
-        syncIcon.classList.remove('animate-spin');
-        syncBtn.disabled = false;
-        syncBtnText.innerText = 'Sync Now';
-      }
-    }
-
-    function updateGuildList() {
-      const current = selectedGuild;
-      guildSelector.innerHTML = '<option value="all">All Guilds</option>';
-      const uniqueGuilds = [...new Set(players.map(p => p.guild))].sort();
-      uniqueGuilds.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g;
-        opt.innerText = g;
-        guildSelector.appendChild(opt);
-      });
-      selectedGuild = uniqueGuilds.includes(current) ? current : 'all';
-      guildSelector.value = selectedGuild;
-    }
-
-    function updateStats() {
-      document.getElementById('count-allies').innerText = players.filter(p => p.type === 'ally').length;
-      document.getElementById('count-enemies').innerText = players.filter(p => p.type === 'enemy').length;
-    }
-
-    function setFilter(type) {
-      filterType = type;
-      document.querySelectorAll('.filter-btn').forEach(b => {
-        b.className = 'flex-1 rounded-xl text-[10px] font-black uppercase transition-all text-slate-500 hover:text-white filter-btn';
-      });
-      const activeBtn = document.querySelector(`.filter-btn[data-filter="${type}"]`);
-      if (activeBtn) {
-        activeBtn.className = `flex-1 rounded-xl text-[10px] font-black uppercase transition-all shadow-inner filter-btn ${type === 'all' ? 'bg-slate-700 text-white' :
-          type === 'enemy' ? 'bg-red-500/20 text-red-400' :
-            'bg-blue-500/20 text-blue-400'
-          }`;
-      }
-    }
-
-    function render() {
-      const searchLower = searchTerm.toLowerCase();
-      const filtered = players.filter(p => {
-        const matchesFilter = filterType === 'all' || p.type === filterType;
-        const matchesGuild = selectedGuild === 'all' || p.guild === selectedGuild;
-        const matchesSearch = !searchTerm ||
-          p.name.toLowerCase().includes(searchLower) ||
-          p.id.toLowerCase().includes(searchLower) ||
-          p.guild.toLowerCase().includes(searchLower);
-        return matchesFilter && matchesGuild && matchesSearch;
-      });
-
-      if (filtered.length === 0) {
-        resultsContainer.innerHTML = `
-                    <div class="text-center py-20 bg-slate-800/20 border border-dashed border-slate-700 rounded-3xl col-span-3">
-                        <p class="text-slate-500 font-medium">No units found.</p>
-                    </div>`;
-        return;
-      }
-
-      resultsContainer.innerHTML = filtered.map(p => {
-        const shortId = p.id.split('/')[1] || p.id;
-        const isEnemy = p.type === 'enemy';
-        const statusLabel = isEnemy ? 'Hostile' : 'Friendly';
-        const enemyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>';
-        const allyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
-
-        return `<div class="glass-panel rounded-xl overflow-hidden border-t-2 ${isEnemy ? 'border-t-red-500/70 hover:border-t-red-400' : 'border-t-blue-500/70 hover:border-t-blue-400'} transition-all hover:bg-slate-700/30 cursor-default">
-                    <div class="p-3 flex flex-col gap-2">
-                        <div class="flex items-center gap-2.5">
-                            <div class="shrink-0 h-8 w-8 rounded-lg flex items-center justify-center ${isEnemy ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-400'}">${isEnemy ? enemyIcon : allyIcon}</div>
-                            <p class="text-sm font-black text-white uppercase truncate leading-tight flex-1">${p.name}</p>
-                        </div>
-                        <div class="flex items-center justify-between gap-1">
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="text-[10px] font-bold text-slate-400 truncate">${p.guild}</span>
-                                <span class="w-1 h-1 rounded-full shrink-0 ${isEnemy ? 'bg-red-500' : 'bg-emerald-500'}"></span>
-                                <span class="text-[10px] font-black uppercase shrink-0 ${isEnemy ? 'text-red-400' : 'text-emerald-400'}">${statusLabel}</span>
-                            </div>
-                            <button onclick="copyToClipboard('${shortId}')" title="Copy Map ID: ${shortId}" class="shrink-0 flex items-center gap-1 px-1.5 py-0.5 bg-slate-800 hover:bg-slate-600 text-slate-500 hover:text-emerald-400 rounded text-[9px] font-black uppercase transition-all border border-slate-700">
-                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                                ${shortId}
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-      }).join('');
-    }
-
-    // Event Listeners
-    document.getElementById('export-enemies-btn').addEventListener('click', () => {
-      const ids = players.filter(p => p.type === 'enemy' && p.id !== '0/0').map(p => p.id.split('/')[1] || p.id).join(', ');
-      if (ids) copyToClipboard(ids);
-      else showToast('No enemies with ID found.');
-    });
-
-    guildSelector.addEventListener('change', (e) => {
-      selectedGuild = e.target.value;
-      if (selectedGuild !== 'all') {
-        const guildPlayers = players.filter(p => p.guild === selectedGuild);
-        if (guildPlayers.length > 0) setFilter(guildPlayers[0].type);
-      }
-      render();
-    });
-
-    syncBtn.addEventListener('click', fetchData);
-    searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; render(); });
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => { setFilter(btn.dataset.filter); render(); });
-    });
-
-    // Init
-    setFilter('enemy');
-    loadCache();
-    fetchData();
-  </script>
+render();
+</script>
 </body>
 
 </html>
