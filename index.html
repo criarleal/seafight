@@ -83,6 +83,17 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #334155;
     }
+
+    .guild-tag{
+  font-family: inherit;
+  font-weight: 900;
+  font-variant-ligatures: none;
+  font-kerning: none;
+  letter-spacing: 0;
+  line-height: 1;
+  unicode-bidi: plaintext;
+  display: inline-block;
+}
   </style>
 </head>
 
@@ -247,7 +258,8 @@ const guilds = [
   { tag: "Ɓ†G", type: "enemy" },
   { tag: "MBŤ", type: "enemy" },
   { tag: "24Ħ", type: "enemy" },
-  { tag: "ΛGΛ", type: "enemy" },
+  { tag: "۸GΛ", type: "enemy" },
+  { tag: "ΛG]Λ", type: "enemy" },
   { tag: "°Ʊ°", type: "enemy" },
   { tag: "CNΛ", type: "enemy" },
   { tag: "S»R", type: "enemy" },
@@ -323,7 +335,7 @@ function render() {
     return `
       <div class="glass-panel rounded-xl border-t-2 ${colors}">
         <div class="p-5 text-center">
-          <div class="text-2xl font-black text-white">${g.tag}</div>
+          <div class="guild-tag text-2xl font-black text-white">${g.tag}</div>
           <div class="text-xs uppercase font-bold mt-2 ${g.type === "enemy" ? "text-red-400" :
             g.type === "ally" ? "text-blue-400" : "text-yellow-400"}">
             ${g.type}
